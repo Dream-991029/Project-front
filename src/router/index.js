@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+// 同步导入组件
 import Company from 'views/home/home-child/system-child/Company'
 import User from 'views/home/home-child/system-child/User'
 import Dept from 'views/home/home-child/system-child/Dept'
@@ -32,7 +33,7 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/home/system'
+        redirect: '/home/user'
       },
       {
         path: 'system',
