@@ -102,7 +102,7 @@ export default {
                   this.$router.push('/home')
                 }, 750)
               } else {
-                if (res.msg === '登录失败,此帐户不存在!') {
+                if (res.msg === '登录失败, 此帐户不存在!') {
                   this.$message.error({
                     message: '帐号不存在,请先注册',
                     center: true,
@@ -121,6 +121,12 @@ export default {
                   this.loginFormData.password = ''
                   // 密码框获取焦点
                   this.$refs.pwdInput.focus()
+                } else {
+                  this.$message.error({
+                    message: res.msg,
+                    center: true,
+                    duration: 1500
+                  })
                 }
               }
             })
