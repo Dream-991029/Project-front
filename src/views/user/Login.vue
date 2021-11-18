@@ -1,38 +1,40 @@
 <template>
   <div class="login-view" @keyup.enter="login('loginForm')">
-    <el-card shadow="hover" class="login-card" :body-style="{ 'padding-bottom': '0px' }">
-      <div slot="header" class="card-header">
-        <span>登录</span>
-      </div>
-      <el-form
-        ref="loginForm"
-        :model="loginFormData"
-        :rules="loginFormRules"
-        label-width="100px"
-        status-icon
-        hide-required-asterisk
-      >
-        <el-form-item label="帐号：" prop="user_name">
-          <el-input
-            placeholder="请输入帐号"
-            v-model="loginFormData.user_name"
-            ref="userNameInput"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="密码：" prop="password">
-          <el-input
-            placeholder="请输入密码"
-            show-password
-            v-model="loginFormData.password"
-            ref="pwdInput"
-          ></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="login('loginForm')">登录</el-button>
-          <el-link type="primary" :underline="false" @click.prevent="linkRegister()" style="margin-left: 80px;">注册</el-link>
-        </el-form-item>
-      </el-form>
-    </el-card>
+    <el-collapse-transition>
+      <el-card v-show="viewShow" shadow="hover" class="login-card" :body-style="{ 'padding-bottom': '0px' }">
+        <div slot="header" class="card-header">
+          <span>登录</span>
+        </div>
+        <el-form
+          ref="loginForm"
+          :model="loginFormData"
+          :rules="loginFormRules"
+          label-width="100px"
+          status-icon
+          hide-required-asterisk
+        >
+          <el-form-item label="帐号：" prop="user_name">
+            <el-input
+              placeholder="请输入帐号"
+              v-model="loginFormData.user_name"
+              ref="userNameInput"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="密码：" prop="password">
+            <el-input
+              placeholder="请输入密码"
+              show-password
+              v-model="loginFormData.password"
+              ref="pwdInput"
+            ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="login('loginForm')">登录</el-button>
+            <el-link type="primary" :underline="false" @click.prevent="linkRegister()" style="margin-left: 80px;">注册</el-link>
+          </el-form-item>
+        </el-form>
+      </el-card>
+    </el-collapse-transition>
   </div>
 </template>
 
@@ -44,6 +46,7 @@ export default {
   name: 'Login',
   data () {
     return {
+      viewShow: false,
       loginFormData: {
         user_name: '',
         password: ''
@@ -95,12 +98,12 @@ export default {
                 this.$message.success({
                   message: '登陆成功',
                   center: true,
-                  duration: 750
+                  duration: 550
                 })
                 setTimeout(() => {
                   // 跳转至首页
                   this.$router.push('/home')
-                }, 750)
+                }, 500)
               } else {
                 if (res.msg === '登录失败, 此帐户不存在!') {
                   this.$message.error({
@@ -108,9 +111,7 @@ export default {
                     center: true,
                     duration: 750
                   })
-                  setTimeout(() => {
-                    this.$router.push('/register')
-                  }, 750)
+                  this.$router.push('/register')
                 } else if (res.msg === '登陆失败, 密码错误!') {
                   this.$message.error({
                     message: '密码错误',
@@ -148,11 +149,16 @@ export default {
         center: true,
         duration: 750
       })
-      setTimeout(() => {
-        // 跳转至注册路由
-        this.$router.push('/register')
-      }, 750)
+      // 跳转至注册路由
+      this.$router.push('/register')
     }
+  },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      setTimeout(() => {
+        vm.viewShow = true
+      }, 300)
+    })
   }
 }
 </script>

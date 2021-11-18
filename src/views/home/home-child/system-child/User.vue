@@ -7,6 +7,7 @@
             v-model="queryInfo.user_name"
             placeholder="请输入帐号"
             clearable
+            ref="userNameInput"
             @clear="getUserList"
             @keyup.enter.native="getUserList"
           >
@@ -23,7 +24,7 @@
       </el-col>
     </el-row>
     <!-- 用户列表 -->
-    <el-table :data="userInfoList">
+    <el-table :data="userInfoList" @row-click="viewUserInfo">
       <el-table-column type="index" label="编号" align="center" width="50" :index="indexMethod"></el-table-column>
       <el-table-column label="帐号" prop="user_name" align="center"></el-table-column>
       <el-table-column label="性别" prop="sex" align="center" width="50"></el-table-column>
@@ -34,7 +35,7 @@
       <el-table-column label="创建时间" prop="create_time" align="center" width="160" :formatter="formatCreateTime"></el-table-column>
       <el-table-column label="最后修改者" prop="update_by" align="center" :formatter="formatUpdateBy"></el-table-column>
       <el-table-column label="最后修改时间" prop="update_time" align="center" width="160" :formatter="formatUpdateTime"></el-table-column>
-      <el-table-column label="备注" prop="remark" align="center"></el-table-column>
+      <el-table-column label="备注" prop="remark" align="center" :formatter="formatRemark"></el-table-column>
       <el-table-column label="操作" align="center" width="150">
         <!-- 操作按钮 -->
         <template slot-scope="scope">
@@ -89,7 +90,7 @@ export default {
         if (row.update_time) {
           return moment(row.update_time).format('YYYY-MM-DD hh:mm:ss')
         }
-        return '无'
+        return '暂无'
       }
     },
     formatCreateTime () {
@@ -97,7 +98,7 @@ export default {
         if (row.create_time) {
           return moment(row.create_time).format('YYYY-MM-DD hh:mm:ss')
         }
-        return '无'
+        return '暂无'
       }
     },
     formatUpdateBy () {
@@ -105,7 +106,7 @@ export default {
         if (row.update_by) {
           return row.update_by
         }
-        return '无'
+        return '暂无'
       }
     },
     formatStatus () {
@@ -117,7 +118,16 @@ export default {
             return '停用'
           }
         }
-        return '未知'
+        return '暂无'
+      }
+    },
+    formatRemark () {
+      return (row, column) => {
+        if (!row.remark) return '暂无'
+        if (row.remark.length > 8) {
+          return row.remark.slice(0, 5) + '...'
+        }
+        return row.remark
       }
     }
   },
@@ -130,6 +140,7 @@ export default {
             this.userInfoList = res.data.data
             // 获取用户总数
             this.total = res.data.total
+            this.$refs.userNameInput.blur()
           } else {
             this.$message.error({
               message: res.msg,
@@ -163,11 +174,28 @@ export default {
     // 序号连续
     indexMethod (index) {
       return (this.queryInfo.page_num - 1) * this.queryInfo.page_size + 1 + index
+    },
+    // 查看用户详细信息
+    viewUserInfo (row, column, event) {
+      // 跳转至用户查看路由
+      this.$router.push({
+        path: '/home/userview',
+        query: {
+          user_name: row.user_name
+        }
+      })
     }
   },
   created () {
     // 请求数据
     this.getUserList()
+  },
+  watch: {
+    'queryInfo.user_name' (val) {
+      if (val === '') {
+        this.getUserList()
+      }
+    }
   }
 }
 </script>

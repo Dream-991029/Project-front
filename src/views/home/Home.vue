@@ -1,15 +1,17 @@
 <template>
-  <el-container class="container">
-    <el-aside width="200px" class="aside-view">
-      <tree-menu></tree-menu>
-    </el-aside>
-    <el-container>
-      <el-header height="70px" class="header-view">欢迎{{ user_name }}</el-header>
-      <el-main class="main-view">
-        <router-view></router-view>
-      </el-main>
+  <transition name="el-fade-in-linear">
+    <el-container v-show="viewShow" class="container">
+      <el-aside width="200px" class="aside-view">
+        <tree-menu></tree-menu>
+      </el-aside>
+      <el-container>
+        <el-header height="70px" class="header-view">欢迎{{ user_name }}</el-header>
+        <el-main class="main-view">
+          <router-view :key="$route.path + $route.query.plan"></router-view>
+        </el-main>
+      </el-container>
     </el-container>
-  </el-container>
+  </transition>
 </template>
 
 <script>
@@ -23,7 +25,8 @@ export default {
   },
   data () {
     return {
-      user_name: ''
+      user_name: '',
+      viewShow: false
     }
   },
   created () {
@@ -32,6 +35,13 @@ export default {
     // 解析token
     const obj = jwtDecode(token)
     this.user_name = obj.user_name
+  },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      setTimeout(() => {
+        vm.viewShow = true
+      }, 150)
+    })
   }
 }
 </script>

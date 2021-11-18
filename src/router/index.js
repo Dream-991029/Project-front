@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 // 同步导入组件
+import System from 'views/home/home-child/System'
 import Company from 'views/home/home-child/system-child/Company'
 import User from 'views/home/home-child/system-child/User'
 import Dept from 'views/home/home-child/system-child/Dept'
@@ -15,7 +16,6 @@ import UserExport from 'views/home/home-child/system-child/user-child/UserExport
 const Login = () => import('views/user/Login')
 const Register = () => import('views/user/Register')
 const Home = () => import('views/home/Home')
-const System = () => import('views/home/home-child/System')
 
 Vue.use(VueRouter)
 
@@ -38,7 +38,7 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/home/userview'
+        redirect: '/home/user'
       },
       {
         path: 'system',

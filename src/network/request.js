@@ -5,7 +5,7 @@ const that = window.vm
 export function request (config) {
   // 创建一个axios实例
   const instance = axios.create({
-    baseURL: 'http://192.168.2.136:8024',
+    baseURL: 'http://192.168.10.7:8024',
     timeout: 5000
   })
   // 请求拦截器

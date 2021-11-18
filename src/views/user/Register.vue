@@ -1,72 +1,74 @@
 <template>
   <div class="register-view" @keyup.enter="submitRegister('registerForm')">
-    <el-card shadow="hover" class="register-card" :body-style="{ 'padding-bottom': '0px' }">
-      <div slot="header" class="card-header">
-        <span>注册</span>
-      </div>
-      <el-form
-        ref="registerForm"
-        :model="registerFormData"
-        :rules="registerFormRules"
-        label-width="100px"
-        status-icon
-        hide-required-asterisk
-        @keyup.enter.native="register('registerForm')"
-      >
-        <el-form-item label="帐号：" prop="user_name">
-          <el-input
-            placeholder="请输入帐号"
-            v-model="registerFormData.user_name"
-            ref="userNameInput"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="手机号：" prop="phone_number">
-          <el-input
-            placeholder="请输入手机号"
-            v-model="registerFormData.phone_number"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="密码：" prop="password">
-          <el-input
-            placeholder="请输入密码"
-            show-password
-            v-model="registerFormData.password"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="确认密码：" prop="confirm_password">
-          <el-input
-            placeholder="请再次输入密码"
-            show-password
-            v-model="registerFormData.confirm_password"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="类型：" prop="user_type">
-          <el-radio-group v-model="registerFormData.user_type">
-            <el-radio label="00">系统用户</el-radio>
-            <el-radio label="11">普通用户</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="性别：" prop="sex">
-          <el-radio-group v-model="registerFormData.sex">
-            <el-radio label="0">男</el-radio>
-            <el-radio label="1">女</el-radio>
-            <el-radio label="2">未知</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="备注：" prop="remark">
-          <el-input
-            type="textarea"
-            :rows="4"
-            placeholder="请输入备注"
-            v-model="registerFormData.remark"
-          ></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="submitRegister('registerForm')">注册</el-button>
-          <el-button type="primary" @click="submitSetFrom('registerForm')" class="reset-btn">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
+    <el-collapse-transition>
+      <el-card v-show="viewShow" shadow="hover" class="register-card" :body-style="{ 'padding-bottom': '0px' }">
+        <div slot="header" class="card-header">
+          <span>注册</span>
+        </div>
+        <el-form
+          ref="registerForm"
+          :model="registerFormData"
+          :rules="registerFormRules"
+          label-width="100px"
+          status-icon
+          hide-required-asterisk
+          @keyup.enter.native="register('registerForm')"
+        >
+          <el-form-item label="帐号：" prop="user_name">
+            <el-input
+              placeholder="请输入帐号"
+              v-model="registerFormData.user_name"
+              ref="userNameInput"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="手机号：" prop="phone_number">
+            <el-input
+              placeholder="请输入手机号"
+              v-model="registerFormData.phone_number"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="密码：" prop="password">
+            <el-input
+              placeholder="请输入密码"
+              show-password
+              v-model="registerFormData.password"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="确认密码：" prop="confirm_password">
+            <el-input
+              placeholder="请再次输入密码"
+              show-password
+              v-model="registerFormData.confirm_password"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="类型：" prop="user_type">
+            <el-radio-group v-model="registerFormData.user_type">
+              <el-radio label="00">系统用户</el-radio>
+              <el-radio label="11">普通用户</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="性别：" prop="sex">
+            <el-radio-group v-model="registerFormData.sex">
+              <el-radio label="0">男</el-radio>
+              <el-radio label="1">女</el-radio>
+              <el-radio label="2">未知</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="备注：" prop="remark">
+            <el-input
+              type="textarea"
+              :rows="4"
+              placeholder="请输入备注"
+              v-model="registerFormData.remark"
+            ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submitRegister('registerForm')">注册</el-button>
+            <el-button type="primary" @click="submitSetFrom('registerForm')" class="reset-btn">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </el-card>
+    </el-collapse-transition>
   </div>
 </template>
 
@@ -94,6 +96,7 @@ export default {
       }
     }
     return {
+      viewShow: false,
       registerFormData: {
         user_name: '',
         phone_number: '',
@@ -190,10 +193,7 @@ export default {
                 center: true,
                 duration: 750
               })
-              setTimeout(() => {
-                // 跳转至登录页面
-                this.$router.push('/login')
-              }, 750)
+              this.$router.push('/login')
             } else {
               if (res.msg === '该帐号已被占用!') {
                 this.$message.error({
@@ -228,6 +228,13 @@ export default {
       // 重置from
       this.$refs[formName].resetFields()
     }
+  },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      setTimeout(() => {
+        vm.viewShow = true
+      }, 550)
+    })
   }
 }
 </script>

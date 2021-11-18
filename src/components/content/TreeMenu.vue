@@ -54,33 +54,28 @@ export default {
   methods: {
     handleNodeClick (obj) {
       const routerPath = obj.path
-      if (routerPath !== '' && routerPath !== 'base') {
-        this.$router.push('/home/' + routerPath).catch((err) => {
-          return err
-        })
-      } else if (obj.perms.split(':')[2] === 'query') {
-        this.$router.push('/home/userview').catch((err) => {
-          return err
-        })
-      } else if (obj.perms.split(':')[2] === 'add') {
-        this.$router.push('/home/useradd').catch((err) => {
-          return err
-        })
-      } else if (obj.perms.split(':')[2] === 'edit') {
-        this.$router.push('/home/useredit').catch((err) => {
-          return err
-        })
-      } else if (obj.perms.split(':')[2] === 'remove') {
-        this.$router.push('/home/userdelete').catch((err) => {
-          return err
-        })
-      } else if (obj.perms.split(':')[2] === 'export') {
-        this.$router.push('/home/userexport').catch((err) => {
-          return err
-        })
-      } else {
-        return false
+      const query = {
+        path: '',
+        query: {
+          plan: Date.now().toString()
+        }
       }
+      if (routerPath !== '' && routerPath !== 'base') {
+        query.path = '/home/' + routerPath
+      } else if (obj.perms === 'system:user:query') {
+        query.path = '/home/userview'
+      } else if (obj.perms === 'system:user:add') {
+        query.path = '/home/useradd'
+      } else if (obj.perms === 'system:user:edit') {
+        query.path = '/home/useredit'
+      } else if (obj.perms === 'system:user:remove') {
+        query.path = '/home/userdelete'
+      } else if (obj.perms === 'system:user:export') {
+        query.path = '/home/userexport'
+      } else {
+        return true
+      }
+      this.$router.push(query)
     }
   }
 }
