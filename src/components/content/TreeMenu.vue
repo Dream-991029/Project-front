@@ -55,7 +55,29 @@ export default {
     handleNodeClick (obj) {
       const routerPath = obj.path
       if (routerPath !== '' && routerPath !== 'base') {
-        this.$router.push('/home/' + routerPath)
+        this.$router.push('/home/' + routerPath).catch((err) => {
+          return err
+        })
+      } else if (obj.perms.split(':')[2] === 'query') {
+        this.$router.push('/home/userview').catch((err) => {
+          return err
+        })
+      } else if (obj.perms.split(':')[2] === 'add') {
+        this.$router.push('/home/useradd').catch((err) => {
+          return err
+        })
+      } else if (obj.perms.split(':')[2] === 'edit') {
+        this.$router.push('/home/useredit').catch((err) => {
+          return err
+        })
+      } else if (obj.perms.split(':')[2] === 'remove') {
+        this.$router.push('/home/userdelete').catch((err) => {
+          return err
+        })
+      } else if (obj.perms.split(':')[2] === 'export') {
+        this.$router.push('/home/userexport').catch((err) => {
+          return err
+        })
       } else {
         return false
       }

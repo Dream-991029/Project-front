@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { getUserInfo } from 'network/userinfo.js'
+import { getUserInfoList } from 'network/userinfo.js'
 // 引入格式化时间模块
 import moment from 'moment'
 
@@ -123,7 +123,7 @@ export default {
   },
   methods: {
     getUserList () {
-      getUserInfo(this.queryInfo)
+      getUserInfoList(this.queryInfo)
         .then((res) => {
           if (res.status === 0) {
             // 获取用户列表

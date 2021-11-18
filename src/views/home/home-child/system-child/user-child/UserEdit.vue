@@ -1,12 +1,12 @@
 <template>
   <div>
-    用户信息
+    用户修改
   </div>
 </template>
 
 <script>
 export default {
-  name: ''
+  name: 'UserEdit'
 }
 </script>
 

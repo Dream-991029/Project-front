@@ -5,6 +5,11 @@ import Company from 'views/home/home-child/system-child/Company'
 import User from 'views/home/home-child/system-child/User'
 import Dept from 'views/home/home-child/system-child/Dept'
 import Menu from 'views/home/home-child/system-child/Menu'
+import UserView from 'views/home/home-child/system-child/user-child/UserView'
+import UserAdd from 'views/home/home-child/system-child/user-child/UserAdd'
+import UserEdit from 'views/home/home-child/system-child/user-child/UserEdit'
+import UserDelete from 'views/home/home-child/system-child/user-child/UserDelete'
+import UserExport from 'views/home/home-child/system-child/user-child/UserExport'
 
 // 懒加载方式导入组件
 const Login = () => import('views/user/Login')
@@ -33,7 +38,7 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/home/user'
+        redirect: '/home/userview'
       },
       {
         path: 'system',
@@ -46,6 +51,26 @@ const routes = [
       {
         path: 'user',
         component: User
+      },
+      {
+        path: 'userview',
+        component: UserView
+      },
+      {
+        path: 'useradd',
+        component: UserAdd
+      },
+      {
+        path: 'useredit',
+        component: UserEdit
+      },
+      {
+        path: 'userdelete',
+        component: UserDelete
+      },
+      {
+        path: 'userexport',
+        component: UserExport
       },
       {
         path: 'dept',
