@@ -80,6 +80,9 @@ export default {
     }
   },
   mounted () {
+    setTimeout(() => {
+      this.viewShow = true
+    }, 300)
     this.$refs.userNameInput.focus()
   },
   methods: {
@@ -152,13 +155,6 @@ export default {
       // 跳转至注册路由
       this.$router.push('/register')
     }
-  },
-  beforeRouteEnter (to, from, next) {
-    next(vm => {
-      setTimeout(() => {
-        vm.viewShow = true
-      }, 300)
-    })
   }
 }
 </script>

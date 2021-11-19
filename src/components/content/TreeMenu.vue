@@ -5,6 +5,7 @@
       accordion
       node-key="menu_id"
       :default-expanded-keys="defaultExpandedKeys"
+      @node-expand="handleNodeExpand"
       @current-change="handleNodeClick"
       class="tree-menu-view">
     </el-tree>
@@ -53,6 +54,49 @@ export default {
   },
   methods: {
     handleNodeClick (obj) {
+      if (!('children' in obj)) {
+        const query = {
+          path: '',
+          query: {
+            plan: Date.now().toString()
+          }
+        }
+        if (obj.perms === 'system:user:query') {
+          query.path = '/home/userview'
+        } else if (obj.perms === 'system:user:add') {
+          query.path = '/home/useradd'
+        } else if (obj.perms === 'system:user:edit') {
+          query.path = '/home/useredit'
+        } else if (obj.perms === 'system:user:remove') {
+          query.path = '/home/userdelete'
+        } else if (obj.perms === 'system:user:export') {
+          query.path = '/home/userexport'
+        } else if (obj.path !== 'base') {
+          query.path = `/home/${obj.path}`
+        } else {
+          return false
+        }
+        this.$router.push(query)
+      } else {
+        return false
+      }
+      // if (routerPath !== '' && routerPath !== 'base') {
+      //   query.path = '/home/' + routerPath
+      // } else if (obj.perms === 'system:user:query') {
+      //   query.path = '/home/userview'
+      // } else if (obj.perms === 'system:user:add') {
+      //   query.path = '/home/useradd'
+      // } else if (obj.perms === 'system:user:edit') {
+      //   query.path = '/home/useredit'
+      // } else if (obj.perms === 'system:user:remove') {
+      //   query.path = '/home/userdelete'
+      // } else if (obj.perms === 'system:user:export') {
+      //   query.path = '/home/userexport'
+      // } else {
+      //   return true
+      // }
+    },
+    handleNodeExpand (obj, node, vm) {
       const routerPath = obj.path
       const query = {
         path: '',
@@ -60,22 +104,12 @@ export default {
           plan: Date.now().toString()
         }
       }
-      if (routerPath !== '' && routerPath !== 'base') {
+      if (routerPath !== 'base') {
         query.path = '/home/' + routerPath
-      } else if (obj.perms === 'system:user:query') {
-        query.path = '/home/userview'
-      } else if (obj.perms === 'system:user:add') {
-        query.path = '/home/useradd'
-      } else if (obj.perms === 'system:user:edit') {
-        query.path = '/home/useredit'
-      } else if (obj.perms === 'system:user:remove') {
-        query.path = '/home/userdelete'
-      } else if (obj.perms === 'system:user:export') {
-        query.path = '/home/userexport'
+        this.$router.push(query)
       } else {
-        return true
+        return false
       }
-      this.$router.push(query)
     }
   }
 }

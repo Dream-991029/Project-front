@@ -41,26 +41,12 @@
               v-model="registerFormData.confirm_password"
             ></el-input>
           </el-form-item>
-          <el-form-item label="类型：" prop="user_type">
-            <el-radio-group v-model="registerFormData.user_type">
-              <el-radio label="00">系统用户</el-radio>
-              <el-radio label="11">普通用户</el-radio>
-            </el-radio-group>
-          </el-form-item>
           <el-form-item label="性别：" prop="sex">
             <el-radio-group v-model="registerFormData.sex">
               <el-radio label="0">男</el-radio>
               <el-radio label="1">女</el-radio>
               <el-radio label="2">未知</el-radio>
             </el-radio-group>
-          </el-form-item>
-          <el-form-item label="备注：" prop="remark">
-            <el-input
-              type="textarea"
-              :rows="4"
-              placeholder="请输入备注"
-              v-model="registerFormData.remark"
-            ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitRegister('registerForm')">注册</el-button>
@@ -102,9 +88,7 @@ export default {
         phone_number: '',
         password: '',
         confirm_password: '',
-        user_type: '',
-        sex: '',
-        remark: ''
+        sex: ''
       },
       registerFormRules: {
         user_name: [
@@ -145,31 +129,20 @@ export default {
             trigger: 'blur'
           }
         ],
-        user_type: [
-          {
-            required: true,
-            message: '请选择类型',
-            trigger: 'change'
-          }
-        ],
         sex: [
           {
             required: true,
             message: '请选择性别',
             trigger: 'change'
           }
-        ],
-        remark: [
-          {
-            max: 500,
-            message: '备注过长',
-            trigger: 'blur'
-          }
         ]
       }
     }
   },
   mounted () {
+    setTimeout(() => {
+      this.viewShow = true
+    }, 300)
     this.$refs.userNameInput.focus()
   },
   methods: {
@@ -228,13 +201,6 @@ export default {
       // 重置from
       this.$refs[formName].resetFields()
     }
-  },
-  beforeRouteEnter (to, from, next) {
-    next(vm => {
-      setTimeout(() => {
-        vm.viewShow = true
-      }, 550)
-    })
   }
 }
 </script>

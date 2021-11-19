@@ -14,3 +14,11 @@ export function getUserInfo (userName) {
     url: `/userinfo/${userName}`
   })
 }
+
+export function addUser (data) {
+  return request({
+    method: 'post',
+    url: '/userinfo/adduser',
+    data
+  })
+}
