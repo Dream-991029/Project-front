@@ -11,7 +11,10 @@ export function getUserInfoList (data) {
 export function getUserInfo (userName) {
   return request({
     method: 'get',
-    url: `/userinfo/${userName}`
+    url: '/userinfo/info',
+    params: {
+      user_name: userName
+    }
   })
 }
 

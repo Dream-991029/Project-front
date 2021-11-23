@@ -5,7 +5,6 @@
         <div slot="header" class="card-header">
           <span>添加用户</span>
         </div>
-        <!-- @keyup.enter.native="register('registerForm')" -->
         <el-form
           ref="addUserForm"
           :model="addUserFormData"
@@ -13,6 +12,7 @@
           label-width="100px"
           status-icon
           hide-required-asterisk
+          @keyup.enter.native="submitAddUser('addUserForm')"
         >
           <el-form-item label="帐号：" prop="user_name">
             <el-input
@@ -74,6 +74,8 @@
 
 <script>
 import { addUser } from 'network/userinfo'
+import jwtDecode from 'jwt-decode'
+
 export default {
   name: 'UserAdd',
   data () {
@@ -89,7 +91,7 @@ export default {
     var checkConfirmPassword = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'))
-      } else if (value !== this.registerFormData.password) {
+      } else if (value !== this.addUserFormData.password) {
         callback(new Error('两次输入密码不一致,请重新输入'))
       } else {
         callback()
@@ -188,6 +190,12 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           const addUserData = this.addUserFormData
+          // vuex获取token
+          const token = this.$store.state.token
+          // 解析token
+          const obj = jwtDecode(token)
+          // 取出创建者id
+          addUserData.create_by = obj.user_id
           addUser(addUserData).then(res => {
             if (res.status === 0) {
               this.$message.success({
@@ -195,34 +203,40 @@ export default {
                 center: true,
                 duration: 750
               })
-              this.$router.push('/home/userview')
+              this.$router.push({
+                path: '/home/userview',
+                query: {
+                  user_name: addUserData.user_name
+                }
+              })
             } else {
               if (res.msg === '该帐号已被占用!') {
                 this.$message.error({
                   message: '此帐号已存在, 请重新输入帐号',
                   center: true,
-                  duration: 1500
+                  duration: 750
                 })
                 // 清空帐号框
                 this.addUserFormData.user_name = ''
                 // 账号框获取焦点
-                return this.$refs.userNameInput.focus()
+                this.$refs.userNameInput.focus()
+                return false
               }
               this.$message.error({
                 message: res.msg,
                 center: true,
-                duration: 1500
+                duration: 700
               })
             }
           }).catch(err => {
             this.$message.error({
               message: err,
               center: true,
-              duration: 1500
+              duration: 700
             })
           })
         } else {
-          return true
+          return false
         }
       })
     },
