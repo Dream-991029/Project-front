@@ -1,7 +1,5 @@
 import axios from 'axios'
 
-const that = window.vm
-
 export function request (config) {
   // 创建一个axios实例
   const instance = axios.create({
@@ -23,8 +21,8 @@ export function request (config) {
     if (res.data.msg === '身份验证错误!' || res.data.msg === '身份已过期!') {
       res.data.msg = res.data.msg.replace('!', '') + ',请重新登录'
       setTimeout(() => {
-        that.$router.push('/login')
-      }, 1500)
+        window.location.href = '/'
+      }, 700)
     }
     return res.data
   }, err => {

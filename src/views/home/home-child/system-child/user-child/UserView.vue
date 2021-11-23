@@ -63,7 +63,8 @@ export default {
       contentStyle: {
         'text-align': 'center'
       },
-      viewShow: false
+      viewShow: false,
+      isEmpty: true
     }
   },
   filters: {
@@ -90,10 +91,27 @@ export default {
       }
     }
   },
-  computed: {
-    isEmpty () {
-      return Object.keys(this.userInfo).length === 0
-    }
+  created () {
+    new Promise(resolve => {
+      setTimeout(() => {
+        this.viewShow = true
+        const obj = this.$route.query
+        resolve(obj)
+      }, 300)
+    }).then(res => {
+      if (Object.keys(res).length !== 0 && 'user_name' in res) {
+        // 将输入框中添加帐号
+        this.user_name = res.user_name
+        // 重新请求数据
+        this.getUserInfoFunc()
+        // 搜索框失去焦点
+        this.$refs.userNameInput.blur()
+      } else {
+        this.isEmpty = true
+        // 搜索框获取焦点
+        this.$refs.userNameInput.focus()
+      }
+    })
   },
   methods: {
     getUserInfoFunc () {
@@ -103,7 +121,7 @@ export default {
             this.userInfo = res.data
             this.$refs.userNameInput.blur()
           } else if (res.msg === '查询失败, 此帐号不存在!') {
-            this.userInfo = {}
+            this.isEmpty = true
             this.$message.error({
               message: res.msg,
               center: true,
@@ -132,41 +150,27 @@ export default {
       }
     },
     clearUserInfo () {
-      this.userInfo = {}
+      this.isEmpty = true
       this.$refs.userNameInput.focus()
     }
-  },
-  mounted () {
-    new Promise((resolve, reject) => {
-      setTimeout(() => {
-        this.viewShow = true
-        resolve()
-      }, 300)
-    }).then(res => {
-      this.$refs.userNameInput.focus()
-    })
   },
   watch: {
     // 监听输入的用户名
     user_name (val) {
       if (val === '') {
-        this.userInfo = {}
+        this.isEmpty = true
       }
+    },
+    userInfo: {
+      handler (val) {
+        if (Object.keys(val).length === 0) {
+          this.isEmpty = true
+        } else {
+          this.isEmpty = false
+        }
+      },
+      deep: true
     }
-  },
-  beforeRouteEnter (to, from, next) {
-    const obj = to.query
-    if (Object.keys(obj).length !== 0 && 'user_name' in obj) {
-      next(vm => {
-        // 将输入框中添加帐号
-        vm.user_name = obj.user_name
-        // 重新请求数据
-        vm.getUserInfoFunc()
-        // 输入框失去焦点
-        vm.$refs.userNameInput.blur()
-      })
-    }
-    next()
   }
 }
 </script>

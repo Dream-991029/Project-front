@@ -77,6 +77,17 @@
                 <el-radio label="2">未知</el-radio>
               </el-radio-group>
             </el-form-item>
+            <el-form-item label="状态：" prop="status">
+              <el-tooltip :content="statusText" placement="top">
+                <el-switch
+                  v-model="editUserFormData.status"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                  active-value="0"
+                  inactive-value="1">
+                </el-switch>
+              </el-tooltip>
+            </el-form-item>
             <el-form-item label="备注：" prop="remark">
               <el-input
                 type="textarea"
@@ -99,7 +110,8 @@
 </template>
 
 <script>
-import { getUserInfo } from 'network/userinfo'
+import { getUserInfo, editUser } from 'network/userinfo'
+import jwtDecode from 'jwt-decode'
 
 export default {
   name: 'UserEdit',
@@ -114,9 +126,7 @@ export default {
       }
     }
     var checkConfirmPassword = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请再次输入密码'))
-      } else if (value !== this.addUserFormData.password) {
+      if (value !== this.editUserFormData.password) {
         callback(new Error('两次输入密码不一致,请重新输入'))
       } else {
         callback()
@@ -148,11 +158,6 @@ export default {
         ],
         password: [
           {
-            required: true,
-            message: '请输入密码',
-            trigger: 'blur'
-          },
-          {
             max: 100,
             message: '密码过长',
             trigger: 'blur'
@@ -176,22 +181,79 @@ export default {
       isEmpty: true
     }
   },
-  mounted () {
-    new Promise((resolve, reject) => {
+  computed: {
+    formatData () {
+      return (data) => {
+        for (const key in data) {
+          if (key === 'user_type') {
+            if (data[key] === '系统用户') {
+              data[key] = '00'
+            } else {
+              data[key] = '11'
+            }
+          } else if (key === 'sex') {
+            if (data[key] === '男') {
+              data[key] = '0'
+            } else if (data[key] === '女') {
+              data[key] = '1'
+            } else {
+              data[key] = '2'
+            }
+          }
+        }
+        data.password = ''
+        data.confirm_password = ''
+        return data
+      }
+    },
+    statusText () {
+      if (this.editUserFormData.status === '0') {
+        return '正常'
+      } else if (this.editUserFormData.status === '1') {
+        return '停用'
+      } else {
+        return '未知'
+      }
+    }
+  },
+  created () {
+    new Promise(resolve => {
       setTimeout(() => {
         this.viewShow = true
-        resolve()
+        const obj = this.$route.query
+        resolve(obj)
       }, 300)
     }).then(res => {
-      this.$refs.userNameInputSearch.focus()
+      if (Object.keys(res).length !== 0 && 'user_name' in res) {
+        // 将输入框中添加帐号
+        this.searchUserName = res.user_name
+        // 重新请求数据
+        this.getUserInfoFunc()
+        // 搜索框失去焦点
+        this.$refs.userNameInputSearch.blur()
+      } else {
+        this.isEmpty = true
+        // 搜索框获取焦点
+        this.$refs.userNameInputSearch.focus()
+      }
     })
   },
   methods: {
+    checkPhoneFunc (tel) {
+      const reg = /^1[3|4|5|6|7|8|9]\d{9}$/
+      if (reg.test(tel)) {
+        return true
+      } else {
+        return false
+      }
+    },
     getUserInfoFunc () {
       if (this.searchUserName !== '') {
         getUserInfo(this.searchUserName).then(res => {
           if (res.status === 0) {
-            this.editUserFormData = res.data
+            // 获取数据
+            this.editUserFormData = this.formatData(res.data)
+            // 搜索框失去焦点
             this.$refs.userNameInputSearch.blur()
           } else if (res.msg === '查询失败,此帐号不存在!') {
             this.isEmpty = true
@@ -226,6 +288,70 @@ export default {
     clearUserInfo () {
       this.isEmpty = true
       this.$refs.userNameInputSearch.focus()
+    },
+    submitEditUser (formName) {
+      // 点击注册判断表单是否全部验证完成
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          const editUserData = this.editUserFormData
+          // vuex获取token
+          const token = this.$store.state.token
+          // 解析token
+          const obj = jwtDecode(token)
+          // 取出id
+          editUserData.update_by = obj.user_id
+          delete editUserData.create_by
+          delete editUserData.create_time
+          delete editUserData.update_time
+          editUser(editUserData).then(res => {
+            if (res.status === 0) {
+              this.$message.success({
+                message: '修改成功, 正在跳转至用户详细页',
+                center: true,
+                duration: 750
+              })
+              this.$router.push({
+                path: '/home/userview',
+                query: {
+                  user_name: res.data.user_name
+                }
+              })
+            } else {
+              if (res.msg === '该帐号已被占用!') {
+                this.$message.error({
+                  message: '此帐号已存在, 请重新输入帐号',
+                  center: true,
+                  duration: 1500
+                })
+                // 清空帐号框
+                this.editUserFormData.user_name = ''
+                // 账号框获取焦点
+                this.$refs.userNameInput.focus()
+              } else {
+                this.$message.error({
+                  message: res.msg,
+                  center: true,
+                  duration: 1500
+                })
+              }
+            }
+          }).catch(err => {
+            this.$message.error({
+              message: err,
+              center: true,
+              duration: 1500
+            })
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    submitSetFrom (formName) {
+      // 重置from
+      this.$refs[formName].resetFields()
+      // 重新请求数据
+      this.getUserInfoFunc()
     }
   },
   watch: {
@@ -243,26 +369,6 @@ export default {
         }
       },
       deep: true
-    }
-  },
-  beforeRouteEnter (to, from, next) {
-    const obj = to.query
-    if (Object.keys(obj).length !== 0 && 'user_name' in obj) {
-      next(vm => {
-        new Promise(resolve => {
-          // 将输入框中添加帐号
-          vm.searchUserName = obj.user_name
-          // 重新请求数据
-          vm.getUserInfoFunc()
-          resolve()
-        }).then(() => {
-          console.log(vm.$refs.userNameInputSearch)
-          // 输入框失去焦点
-          vm.$refs.userNameInputSearch.blur()
-        })
-      })
-    } else {
-      next()
     }
   }
 }

@@ -38,7 +38,7 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/home/useredit'
+        redirect: '/home/system'
       },
       {
         path: 'system',
