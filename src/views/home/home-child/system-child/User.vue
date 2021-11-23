@@ -43,12 +43,12 @@
           <template slot-scope="scope">
             <el-button
               size="mini"
-              @click="handleEdit(scope.$index, scope.row)">修改
+              @click.stop="handleEdit(scope.row)">修改
             </el-button>
             <el-button
               size="mini"
               type="danger"
-              @click="handleDelete(scope.$index, scope.row)">删除
+              @click.stop="handleDelete(scope.row)">删除
             </el-button>
           </template>
         </el-table-column>
@@ -160,6 +160,25 @@ export default {
             duration: 1000
           })
         })
+    },
+    // 修改按钮事件
+    handleEdit (row) {
+      // 跳转至用户修改路由
+      this.$router.push({
+        path: '/home/useredit',
+        query: {
+          user_name: row.user_name
+        }
+      })
+    },
+    // 删除按钮事件
+    handleDelete (row) {
+      this.$router.push({
+        path: '/home/userdelete',
+        query: {
+          user_name: row.user_name
+        }
+      })
     },
     // 监听page_size变化
     handleSizeChange (newPageSize) {

@@ -80,10 +80,14 @@ export default {
     }
   },
   mounted () {
-    setTimeout(() => {
-      this.viewShow = true
-    }, 300)
-    this.$refs.userNameInput.focus()
+    new Promise(resolve => {
+      setTimeout(() => {
+        this.viewShow = true
+        resolve()
+      }, 300)
+    }).then(res => {
+      this.$refs.userNameInput.focus()
+    })
   },
   methods: {
     login (formName) {

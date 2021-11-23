@@ -38,7 +38,7 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/home/useradd'
+        redirect: '/home/system'
       },
       {
         path: 'system',

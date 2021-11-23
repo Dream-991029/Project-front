@@ -172,9 +172,14 @@ export default {
     }
   },
   mounted () {
-    setTimeout(() => {
-      this.viewShow = true
-    }, 300)
+    new Promise((resolve) => {
+      setTimeout(() => {
+        this.viewShow = true
+        resolve()
+      }, 300)
+    }).then(() => {
+      this.$refs.userNameInput.focus()
+    })
   },
   methods: {
     checkPhoneFunc (tel) {

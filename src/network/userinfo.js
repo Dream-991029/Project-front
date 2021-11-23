@@ -25,3 +25,22 @@ export function addUser (data) {
     data
   })
 }
+
+export function editUser (data) {
+  return request({
+    method: 'put',
+    url: '/userinfo/edituser',
+    data
+  })
+}
+
+export function deleteUser (userId, userName) {
+  return request({
+    method: 'delete',
+    url: '/userinfo/deleteuser',
+    params: {
+      user_id: userId,
+      user_name: userName
+    }
+  })
+}
