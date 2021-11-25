@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { updateFileRequest } from 'network/file'
+import { uploadFileRequest } from 'network/file'
 import jwtDecode from 'jwt-decode'
 
 export default {
@@ -105,7 +105,7 @@ export default {
           formData.append('name', this.fileFormData.name)
           // 添加题库类型
           formData.append('import_type', this.fileFormData.type)
-          updateFileRequest(formData).then(res => {
+          uploadFileRequest(formData).then(res => {
             if (res.status === 0) {
               this.$message.success({
                 message: res.msg,
